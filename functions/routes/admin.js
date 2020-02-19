@@ -1,8 +1,13 @@
 const { validateLoginData } = require('../util/validators')
 const { db, getAppConfig, configDocumentId, admin } = require('../util/admin')
-const { isNumber, checkLoginTime } = require('../util/utilFunctions')
+const {
+	isNumber,
+	checkLoginTime,
+	parseFileDataForQuestions
+} = require('../util/utilFunctions')
 const firebase = require('firebase')
 firebase.initializeApp(require('../util/firebaseConfig'))
+const Busboy = require('busboy')
 
 exports.adminLoad = (req, res) => {
 	return res.json({ isAuthenticated: true })
@@ -341,4 +346,89 @@ exports.getSingleQuestion = (req, res) => {
 			console.error(err)
 			return res.status(500).json({ error: err.code })
 		})
+}
+
+exports.addQuestionsFromFile = async (req, res) => {
+	let busboy = new Busboy({ headers: req.headers })
+	try {
+		let fileData = ''
+		let mimeType = ''
+		busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
+			mimeType = mimetype
+			file.on('data', data => {
+				fileData = data.toString()
+			})
+		})
+		busboy.on('finish', async () => {
+			if (mimeType !== 'text/csv') {
+				return res.status(400).json({
+					error: 'Wrong file type, please upload .csv file!'
+				})
+			}
+			let { valid, dataArr } = parseFileDataForQuestions(fileData)
+			let promises = []
+
+			if (valid) {
+				for (let i = 0; i < dataArr.length; i += 5) {
+					let correctAnswer = dataArr[i + 5]
+					promises.push(
+						db.collection('questions').add({
+							text: dataArr[i].trim(),
+							answers: [
+								{
+									body: dataArr[i + 1].trim(),
+									id: Math.round(Math.random() * 10000000000),
+									idTrue: correctAnswer == 1 ? true : false
+								},
+								{
+									body: dataArr[i + 2].trim(),
+									id: Math.round(Math.random() * 10000000000),
+									idTrue: correctAnswer == 2 ? true : false
+								},
+								{
+									body: dataArr[i + 3].trim(),
+									id: Math.round(Math.random() * 10000000000),
+									idTrue: correctAnswer == 3 ? true : false
+								},
+								{
+									body: dataArr[i + 4].trim(),
+									id: Math.round(Math.random() * 10000000000),
+									idTrue: correctAnswer == 4 ? true : false
+								}
+							],
+							createdAt: new Date().toISOString()
+						})
+					)
+
+					i += 1
+				}
+
+				await Promise.all(promises)
+
+				const qDoc = await db
+					.collection('questions')
+					.orderBy('createdAt')
+					.get()
+
+				let questions = []
+				qDoc.forEach(doc => {
+					questions.push({
+						id: doc.id,
+						text: doc.data().text,
+						answers: doc.data().answers
+					})
+				})
+				return res.json({ questions })
+			} else {
+				return res
+					.status(400)
+					.json({ error: 'Data is not in valid format!' })
+			}
+		})
+		req.pipe(busboy)
+		busboy.end(req.rawBody)
+	} catch (error) {
+		console.error(err)
+		return res.status(500).json({ error: err.code })
+	}
 }

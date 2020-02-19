@@ -61,3 +61,22 @@ exports.sleep = ms => {
 		setTimeout(resolve, ms)
 	})
 }
+
+exports.parseFileDataForQuestions = data => {
+	let dataArr = data.split(',')
+	let valid = true
+
+	for (let i = 5; i <= dataArr.length; i += 6) {
+		if (isNaN(dataArr[i])) {
+			valid = false
+		} else if (dataArr[i] > 4 && dataArr[i] < 1) {
+			valid = false
+		}
+	}
+
+	if (!valid) {
+		return { valid }
+	}
+
+	return { dataArr, valid }
+}

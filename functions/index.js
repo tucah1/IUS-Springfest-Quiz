@@ -13,7 +13,8 @@ const {
 	editQuestion,
 	getSingleQuestion,
 	postNewQuestion,
-	getAllQuestions
+	getAllQuestions,
+	addQuestionsFromFile
 } = require('./routes/admin')
 const auth = require('./util/auth')
 const cors = require('cors')
@@ -35,5 +36,6 @@ app.get('/admin/load', auth, adminLoad)
 app.get('/admin/rank-list', getTheRankList)
 app.delete('/admin/reset-quiz', auth, resetQuiz)
 app.get('/admin/logout', auth, adminLogout)
+app.post('/admin/questions-file', auth, addQuestionsFromFile)
 
 exports.api = functions.region('europe-west1').https.onRequest(app)
