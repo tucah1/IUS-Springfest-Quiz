@@ -4,7 +4,12 @@ const Credits = () => {
     return (
         <Fragment>
             <footer id="footer">
-                <p>Created by Muše and Tuca from DevIUS</p>
+                <p>
+                    Powered by{' '}
+                    <a href="https://animusdev.com/" id="animus">
+                        Animus Development
+                    </a>
+                </p>
             </footer>
         </Fragment>
     );

@@ -17,7 +17,6 @@ export const getAdminQuestions = () => async dispatch => {
             Authorization: localStorage.getItem('token')
         }
     };
-
     try {
         const res = await axios.get('/admin/questions', config);
 
@@ -140,7 +139,6 @@ export const resetQuiz = () => async dispatch => {
         try {
             await axios.delete('/admin/reset-quiz', config);
             window.location.reload();
-            console.log('deleted');
         } catch (err) {
             console.log(err);
         }
@@ -168,3 +166,27 @@ export const changeSettings = obj => async dispatch => {
         console.log(err);
     }
 };
+
+//send file with questions to server and update datebase with new questions
+export const sendFile = file => async dispatch => {
+    const config = {
+        headers: {
+            Authorization: localStorage.getItem('token')
+        }
+    };
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        await axios.post(
+            'https://cors-anywhere.herokuapp.com/https://europe-west1-ius-springfest-quiz.cloudfunctions.net/api/admin/questions-file',
+            formData
+        );
+    } catch (err) {
+        console.log(err);
+        console.log(err.response);
+    }
+};
+
+// https://europe-west1-ius-springfest-quiz.cloudfunctions.net/api  https://cors-anywhere.herokuapp.com/https://europe-west1-ius-springfest-quiz.cloudfunctions.net/api

@@ -56,8 +56,8 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 settings: {
-                    questionsNumber: payload.questionsNumber,
-                    timer: payload.timeForQuiz,
+                    questionsNumber: Number(payload.questionsNumber),
+                    timer: Number(payload.timeForQuiz),
                     isBlocked: payload.isQuizBlocked,
                     isRankListVisible: payload.isRankListVisible
                 },

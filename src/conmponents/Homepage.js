@@ -75,7 +75,7 @@ const Homepage = ({
                                     adipisicing elit. Quibusdam consequatur
                                     aliquid in quis a par Lorem ipsum dolor sit
                                     amet consectetur adipisicing elit. Odio in
-                                    at distinctio? Voluptatem, rem ab?
+                                    at distinctio?
                                 </p>
                             </Fragment>
                         )}
