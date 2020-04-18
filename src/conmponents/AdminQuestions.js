@@ -35,7 +35,12 @@ const AdminQuestions = ({
                     ? 0
                     : settings.questionsNumber,
             timer: settings.timer === null ? 0 : settings.timer,
-            isBlocked: settings.isBlocked === null ? false : settings.isBlocked,
+            isBlocked:
+                settings.isBlocked === null
+                    ? false
+                    : // : adminQuests.length === 0
+                      // ? true
+                      settings.isBlocked,
             isRankListVisible:
                 settings.isRankListVisible === null
                     ? false
@@ -49,7 +54,7 @@ const AdminQuestions = ({
     ]);
 
     const [quizSettings, setQuizSettings] = useState({
-        numberOfQuestions: '',
+        numberOfQuestions: 0,
         timer: '',
         isBlocked: false,
         isRankListVisible: false
@@ -58,15 +63,19 @@ const AdminQuestions = ({
     const onChange = e => {
         setQuizSettings({
             ...quizSettings,
-            [e.target.name]: e.target.value
+            [e.target.name]: e.target.value.trim()
         });
     };
 
     const onChangeIsBlocked = e => {
-        setQuizSettings({
-            ...quizSettings,
-            isBlocked: !quizSettings.isBlocked
-        });
+        if (adminQuests.length === 0 && quizSettings.isBlocked === true) {
+            alert('Quiz cannot be available when there is no questions!');
+        } else {
+            setQuizSettings({
+                ...quizSettings,
+                isBlocked: !quizSettings.isBlocked
+            });
+        }
     };
 
     const onChangeIsVisible = e => {
@@ -79,14 +88,33 @@ const AdminQuestions = ({
     const onSubmitForm = e => {
         e.preventDefault();
 
-        const settingsObject = {
-            isQuizBlocked: quizSettings.isBlocked,
-            isRankListVisible: quizSettings.isRankListVisible,
-            questionsNumber: quizSettings.numberOfQuestions,
-            timeForQuiz: quizSettings.timer
-        };
+        if (
+            isNaN(quizSettings.timer) ||
+            isNaN(quizSettings.numberOfQuestions)
+        ) {
+            alert('Please enter a number!');
+        } else if (
+            quizSettings.timer < 0 ||
+            quizSettings.numberOfQuestions < 0
+        ) {
+            alert('You cannot enter negative number!');
+        } else if (quizSettings.numberOfQuestions > adminQuests.length) {
+            alert('There is no that much questions!');
+        } else if (
+            adminQuests.length !== 0 &&
+            quizSettings.numberOfQuestions === 0
+        ) {
+            alert('Number of questions cannot be zero!');
+        } else {
+            const settingsObject = {
+                isQuizBlocked: quizSettings.isBlocked,
+                isRankListVisible: quizSettings.isRankListVisible,
+                questionsNumber: quizSettings.numberOfQuestions,
+                timeForQuiz: quizSettings.timer
+            };
 
-        changeSettings(settingsObject);
+            changeSettings(settingsObject);
+        }
     };
 
     return (
@@ -144,14 +172,14 @@ const AdminQuestions = ({
                         <div className="admin-settings-wrapper">
                             <div className="admin-quiz-settings">
                                 <form onSubmit={e => onSubmitForm(e)}>
-                                    Number of questions:{' '}
+                                    Number of questions:
                                     <input
                                         type="text"
                                         name="numberOfQuestions"
                                         value={quizSettings.numberOfQuestions}
                                         onChange={e => onChange(e)}
                                         required
-                                    />{' '}
+                                    />
                                     <br />
                                     Set timer:{' '}
                                     <input

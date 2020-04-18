@@ -18,6 +18,7 @@ export const checkIDandImportQuestions = id => async dispatch => {
         if (res.data.valid) {
             localStorage.setItem('user', id);
         }
+
         dispatch({
             type: IMPORT_QUESTIONS,
             payload: res.data

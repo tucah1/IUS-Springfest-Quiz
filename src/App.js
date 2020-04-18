@@ -26,7 +26,13 @@ import NotFound from './conmponents/NotFound';
 
 //for deployment
 axios.defaults.baseURL =
-    'https://europe-west1-ius-springfest-quiz.cloudfunctions.net/api';
+    'https://europe-west1-iusspringfestquiz.cloudfunctions.net/api';
+
+if (localStorage.token) {
+    axios.defaults.headers.common['Authorization'] = localStorage.token;
+} else {
+    delete axios.defaults.headers.common['Authorization'];
+}
 
 function App() {
     useEffect(() => {
@@ -47,25 +53,10 @@ function App() {
                                     component={Questions}
                                 />
                                 <Route exact path="/admin" component={Login} />
-                                <PrivateRoute
-                                    exact
-                                    path="/quiz-settings"
-                                    component={AdminQuestions}
-                                />
-                                <PrivateRoute
-                                    exact
-                                    path="/add-question"
-                                    component={AddQuestion}
-                                />
                                 <Route
                                     exact
                                     path="/results"
                                     component={Results}
-                                />
-                                <PrivateRoute
-                                    exact
-                                    path="/edit-question/:id"
-                                    component={EditQuestion}
                                 />
                                 <Route
                                     exact
@@ -77,10 +68,26 @@ function App() {
                                     path="/ranklist"
                                     component={RankList}
                                 />
+                                <PrivateRoute
+                                    exact
+                                    path="/quiz-settings"
+                                    component={AdminQuestions}
+                                />
+                                <PrivateRoute
+                                    exact
+                                    path="/add-question"
+                                    component={AddQuestion}
+                                />
+
+                                <PrivateRoute
+                                    exact
+                                    path="/edit-question/:id"
+                                    component={EditQuestion}
+                                />
+
                                 <Route component={NotFound} />
                             </Switch>
                         </section>
-
                         <Credits />
                     </section>
                 </Fragment>

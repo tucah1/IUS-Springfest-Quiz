@@ -12,13 +12,13 @@ const BarcodeScanner = ({
     checkIDandImportQuestions,
     questions,
     history,
-    getSettings
+    getSettings,
 }) => {
     const [state, setState] = useState({
         bDestroyed: false,
         scanner: null,
         elRef: React.createRef(),
-        loading: true
+        loading: true,
     });
 
     const destroy = async () => {
@@ -47,10 +47,10 @@ const BarcodeScanner = ({
                 }
 
                 //! For testing purpose, delete it for final build
-                //checkIDandImportQuestions('180302052');
+                //checkIDandImportQuestions('190352059');
 
                 scanner.setUIElement(state.elRef.current);
-                scanner.onFrameRead = async results => {
+                scanner.onFrameRead = async (results) => {
                     if (results.length) {
                         scanner.pauseScan();
 
@@ -109,7 +109,9 @@ const BarcodeScanner = ({
                         </div>
 
                         {state.loading ? (
-                            <Spinner />
+                            <div className="scanner-spinner">
+                                <Spinner />
+                            </div>
                         ) : (
                             <div ref={state.elRef} className="scanner-video">
                                 <video className="dbrScanner-video"></video>
@@ -124,14 +126,14 @@ const BarcodeScanner = ({
 
 BarcodeScanner.propTypes = {
     checkIDandImportQuestions: PropTypes.func.isRequired,
-    questions: PropTypes.object.isRequired
+    questions: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = state => ({
-    questions: state.questions
+const mapStateToProps = (state) => ({
+    questions: state.questions,
 });
 
 export default connect(mapStateToProps, {
     checkIDandImportQuestions,
-    getSettings
+    getSettings,
 })(withRouter(BarcodeScanner));

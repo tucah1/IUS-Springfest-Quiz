@@ -4,69 +4,67 @@ import {
     LOGOUT,
     CLEAR_QUESTIONS,
     ADMIN_LOADED,
-    AUTH_ERROR
+    AUTH_ERROR,
 } from './types';
 import axios from 'axios';
 import { setAlert } from './alert';
 
-export const loadAdmin = () => async dispatch => {
-    const config = {
-        headers: {
-            Authorization: localStorage.getItem('token')
-        }
-    };
+export const loadAdmin = () => async (dispatch) => {
+    if (localStorage.token) {
+        axios.defaults.headers.common['Authorization'] = localStorage.token;
+    } else {
+        delete axios.defaults.headers.common['Authorization'];
+    }
 
     try {
-        const res = await axios.get('/admin/load', config);
+        const res = await axios.get('/admin/load');
 
         dispatch({
             type: ADMIN_LOADED,
-            payload: res.data
+            payload: res.data,
         });
     } catch (err) {
         dispatch({
-            type: AUTH_ERROR
+            type: AUTH_ERROR,
         });
     }
 };
 
-export const login = (email, password) => async dispatch => {
+export const login = (email, password) => async (dispatch) => {
     try {
         const res = await axios.post('/admin/login', {
             email: email,
-            password: password
+            password: password,
         });
 
         dispatch({
             type: LOGIN_SUCCESS,
-            payload: res.data
+            payload: res.data,
         });
     } catch (err) {
-        console.log(err);
-
         const errors = err.response.data.message;
 
         dispatch(setAlert(errors, 'danger'));
         dispatch({
-            type: LOGIN_FAIL
+            type: LOGIN_FAIL,
         });
     }
 };
 
-export const logout = () => async dispatch => {
+export const logout = () => async (dispatch) => {
     const config = {
         headers: {
-            Authorization: localStorage.getItem('token')
-        }
+            Authorization: localStorage.getItem('token'),
+        },
     };
     try {
         await axios.get('/admin/logout', config);
 
         dispatch({
-            type: LOGOUT
+            type: LOGOUT,
         });
         dispatch({
-            type: CLEAR_QUESTIONS
+            type: CLEAR_QUESTIONS,
         });
     } catch (err) {
         console.log(err);
